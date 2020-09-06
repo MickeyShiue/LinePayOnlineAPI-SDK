@@ -1,0 +1,7 @@
+LinePayEC.WebApi.DotNetCore/bin/
+LinePayEC.WebApi.DotNetFramework/bin/
+LinePayEC/obj/
+LinePayEC/packages/
+LinePayEC/.vs/
+LinePayEC.WebApi.DotNetCore/obj/
+LinePayEC/bin/
