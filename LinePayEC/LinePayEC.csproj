@@ -10,8 +10,4 @@
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\ResponseModels\" />
-  </ItemGroup>
-
 </Project>

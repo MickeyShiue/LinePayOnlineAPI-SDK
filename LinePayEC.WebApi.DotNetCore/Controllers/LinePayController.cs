@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LinePayEC.Models;
 using LinePayEC.Models.RequestModels;
+using LinePayEC.WebApi.DotNetCore.Helper;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 
 namespace LinePayEC.WebApi.DotNetCore.Controllers
 {
@@ -12,15 +13,11 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
     [ApiController]
     public class LinePayController : ControllerBase
     {
-        private readonly string _baseAddress;
-        private readonly string _channelSecret;
-        private readonly string _channelId;
-        
-        public LinePayController()
+        private readonly AppSettings _config;
+
+        public LinePayController(IOptions<AppSettings> config)
         {
-            this._baseAddress = "https://sandbox-api-pay.line.me";
-            this._channelSecret = "6a8a58e1541585215be8a7fdfda7d24e";
-            this._channelId = "1654864310";
+            this._config = config.Value;
         }
 
         [Route("reserve")]
@@ -30,11 +27,11 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
             var nonce = Guid.NewGuid().ToString();
             var reserveUrl = "/v3/payments/request";
 
-            var client = new LinePayClient(_baseAddress);
-            var requestJson = JsonConvert.SerializeObject(requestApi, client.SerializerSettings);
-            var signature = client.GetSignature((_channelSecret + reserveUrl + requestJson + nonce), _channelSecret);
+            var client = new LinePayClient(_config.BaseAddress);
+            var requestJson = JsonConverterFacade.SerializeObject(requestApi, client.SerializerSettings);
+            var signature = client.GetSignature((_config.ChannelSecret + reserveUrl + requestJson + nonce), _config.ChannelSecret);
 
-            var result = await client.ReserveAsync(requestApi, _channelId, nonce, signature);
+            var result = await client.ReserveAsync(requestApi, _config.ChannelId, nonce, signature);
 
             return Ok(result);
         }

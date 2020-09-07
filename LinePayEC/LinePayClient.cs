@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using LinePayEC.Models.RequestModels;
+using LinePayEC.Models.ResponseModels;
 using Newtonsoft.Json;
 
 namespace LinePayEC
@@ -21,7 +22,7 @@ namespace LinePayEC
             SerializerSettings = new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore };
         }
 
-        public async Task<object> ReserveAsync(Reserve reserve, string channelId, string uuid, string signature)
+        public async Task<ReserveResponse> ReserveAsync(Reserve reserve, string channelId, string uuid, string signature)
         {
             this.SetHttpHeader(channelId, uuid, signature);
 
@@ -33,7 +34,7 @@ namespace LinePayEC
             var response = await _client.SendAsync(httpRequestMessage);
 
             if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<object>(await response.Content.ReadAsStringAsync());
+                return JsonConvert.DeserializeObject<ReserveResponse>(await response.Content.ReadAsStringAsync());
             else
                 throw new Exception(await response.Content.ReadAsStringAsync());
         }
