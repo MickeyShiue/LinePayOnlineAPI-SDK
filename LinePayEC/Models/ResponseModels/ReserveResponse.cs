@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LinePayEC.Models.ResponseModels
+namespace LinePayEC.Models.ResponseModels.ReserveResponse
 {
     public class ReserveResponse
     {
