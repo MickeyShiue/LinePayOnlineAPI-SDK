@@ -5,9 +5,7 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinePayEC", "LinePayEC.csproj", "{FE34B60F-1175-4989-A02C-385AC205D6DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinePayEC.WebApi.DotNetFramework", "..\LinePayEC.WebApi.DotNetFramework\LinePayEC.WebApi.DotNetFramework.csproj", "{8929D795-F053-41F0-8868-CED6FA74C574}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinePayEC.WebApi.DotNetCore", "..\LinePayEC.WebApi.DotNetCore\LinePayEC.WebApi.DotNetCore.csproj", "{69095E05-C7D4-444D-AEA1-6766E0B588E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinePayEC.WebApi.DotNetCore", "..\LinePayEC.WebApi.DotNetCore\LinePayEC.WebApi.DotNetCore.csproj", "{69095E05-C7D4-444D-AEA1-6766E0B588E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		{FE34B60F-1175-4989-A02C-385AC205D6DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE34B60F-1175-4989-A02C-385AC205D6DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE34B60F-1175-4989-A02C-385AC205D6DB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8929D795-F053-41F0-8868-CED6FA74C574}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8929D795-F053-41F0-8868-CED6FA74C574}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8929D795-F053-41F0-8868-CED6FA74C574}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8929D795-F053-41F0-8868-CED6FA74C574}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69095E05-C7D4-444D-AEA1-6766E0B588E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69095E05-C7D4-444D-AEA1-6766E0B588E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69095E05-C7D4-444D-AEA1-6766E0B588E9}.Release|Any CPU.ActiveCfg = Release|Any CPU

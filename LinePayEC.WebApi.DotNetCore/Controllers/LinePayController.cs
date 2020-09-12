@@ -14,10 +14,12 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
     public class LinePayController : ControllerBase
     {
         private readonly AppSettings _config;
+        private readonly LinePayClient _client;
 
         public LinePayController(IOptions<AppSettings> config)
         {
             this._config = config.Value;
+            this._client = new LinePayClient(_config.BaseAddress, _config.ChannelId);
         }
 
         [Route("reserve")]
@@ -25,13 +27,11 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
         {
             var reserveData = GetReserveData();
             var nonce = Guid.NewGuid().ToString();
-            var reserveUrl = "/v3/payments/request";
+            var requestUrl = "/v3/payments/request";
+            var requestJson = JsonConverterFacade.SerializeObject(reserveData, _client.SerializerSettings);
+            var signature = _client.GetSignature((_config.ChannelSecret + requestUrl + requestJson + nonce), _config.ChannelSecret);
 
-            var client = new LinePayClient(_config.BaseAddress);
-            var requestJson = JsonConverterFacade.SerializeObject(reserveData, client.SerializerSettings);
-            var signature = client.GetSignature((_config.ChannelSecret + reserveUrl + requestJson + nonce), _config.ChannelSecret);
-
-            var result = await client.ReserveAsync(reserveData, _config.ChannelId, nonce, signature);
+            var result = await _client.ReserveAsync(reserveData, nonce, signature);
 
             return Ok(result);
         }
@@ -42,14 +42,11 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
             var confirmData = GetConfirmData();
             var nonce = Guid.NewGuid().ToString();
             var confirmUrl = $"/v3/payments/{transactionId}/confirm";
+            var requestJson = JsonConverterFacade.SerializeObject(confirmData, _client.SerializerSettings);
+            var signature = _client.GetSignature((_config.ChannelSecret + confirmUrl + requestJson + nonce), _config.ChannelSecret);
 
-            var client = new LinePayClient(_config.BaseAddress);
-            var requestJson = JsonConverterFacade.SerializeObject(confirmData, client.SerializerSettings);
-            var signature = client.GetSignature((_config.ChannelSecret + confirmUrl + requestJson + nonce), _config.ChannelSecret);
-
-            var result = await client.ConfirmAsync(confirmData, _config.ChannelId, nonce, signature, transactionId);
-            //若不是自動請款請呼叫 client.CaptureAsync()，如果使用非自動請款，請聯繫 LINE PAY API 相關窗口申請
-
+            var result = await _client.ConfirmAsync(confirmData, nonce, signature, transactionId);
+            // 若不是自動請款請呼叫 _client.CaptureAsync()，如果使用非自動請款，請聯繫 LINE PAY API 相關窗口申請
 
             return Ok(result);
         }
@@ -59,11 +56,9 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
         {
             var nonce = Guid.NewGuid().ToString();
             var voidUrl = $" /v3/payments/authorizations/{transactionId}/void";
+            var signature = _client.GetSignature((_config.ChannelSecret + voidUrl + null + nonce), _config.ChannelSecret);
 
-            var client = new LinePayClient(_config.BaseAddress);
-            var signature = client.GetSignature((_config.ChannelSecret + voidUrl + null + nonce), _config.ChannelSecret);
-
-            var result = await client.VoidAsync(_config.ChannelId, nonce, signature, transactionId); //Error 1106，可能是因為自動付款沒辦法用
+            var result = await _client.VoidAsync(nonce, signature, transactionId); //Error 1106，可能是因為自動付款沒辦法用
 
             return Ok(result);
         }
@@ -74,12 +69,10 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
             var refundData = GetRefund();
             var nonce = Guid.NewGuid().ToString();
             var refundUrl = $"/v3/payments/{transactionId}/refund";
+            var requestJson = JsonConverterFacade.SerializeObject(refundData, _client.SerializerSettings);
+            var signature = _client.GetSignature((_config.ChannelSecret + refundUrl + requestJson + nonce), _config.ChannelSecret);
 
-            var client = new LinePayClient(_config.BaseAddress);
-            var requestJson = JsonConverterFacade.SerializeObject(refundData, client.SerializerSettings);
-            var signature = client.GetSignature((_config.ChannelSecret + refundUrl + requestJson + nonce), _config.ChannelSecret);
-
-            var result = await client.RefundAsync(refundData, _config.ChannelId, nonce, signature, transactionId);
+            var result = await _client.RefundAsync(refundData, nonce, signature, transactionId);
 
             return Ok(result);
         }
@@ -90,12 +83,10 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
             var paymentDetails = GetPaymentDetails();
             var nonce = Guid.NewGuid().ToString();
             var paymentUrl = $"/v3/payments";
-
-            var client = new LinePayClient(_config.BaseAddress);
             var queryString = $"transactionId={paymentDetails.TransactionId}&orderId={paymentDetails.OrderId}";
-            var signature = client.GetSignature((_config.ChannelSecret + paymentUrl + queryString + nonce), _config.ChannelSecret);
+            var signature = _client.GetSignature((_config.ChannelSecret + paymentUrl + queryString + nonce), _config.ChannelSecret);
 
-            var result = await client.PaymentDetailsAsync(paymentDetails, _config.ChannelId, nonce, signature);
+            var result = await _client.PaymentDetailsAsync(paymentDetails, nonce, signature);
 
             return Ok(result);
         }
@@ -103,13 +94,13 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
         [Route("CheckPaymentStatus")]
         public async Task<IActionResult> CheckPaymentStatus()
         {
-            long transactionId = 2020091200628346110;
+            var transactionId = CheckPaymentStatusTransactionId;
             var nonce = Guid.NewGuid().ToString();
             var checkUrl = $"/v3/payments/requests/{transactionId}/check";
 
-            var client = new LinePayClient(_config.BaseAddress);
-            var signature = client.GetSignature((_config.ChannelSecret + checkUrl + nonce), _config.ChannelSecret);
-            var result = await client.CheckAsync(_config.ChannelId, nonce, signature, transactionId);
+            
+            var signature = _client.GetSignature((_config.ChannelSecret + checkUrl + nonce), _config.ChannelSecret);
+            var result = await _client.CheckAsync(nonce, signature, transactionId);
 
             return Ok(result);
         }
@@ -142,9 +133,7 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
                 new Packages { Id = Guid.NewGuid().ToString(), Amount = 100, Products = products }
             );
 
-            //reserve.RedirectUrls.ConfirmUrl = "https://localhost:44325/api/LinePay/confirm";
-
-            reserve.RedirectUrls.ConfirmUrl = "https://aaaa.com/api/LinePay/confirm";
+            reserve.RedirectUrls.ConfirmUrl = "https://localhost:44325/api/LinePay/confirm";
             reserve.RedirectUrls.CancelUrl = "https://localhost:44325/api/LinePay/cancel";
 
             return reserve;
@@ -193,6 +182,8 @@ namespace LinePayEC.WebApi.DotNetCore.Controllers
             //    OrderId = "6eaa286c-9803-4fdf-8ab5-e2ef5cdb3a9d"
             //};
         }
+
+        private long CheckPaymentStatusTransactionId => 2020091200628346110;
 
         #endregion
     }

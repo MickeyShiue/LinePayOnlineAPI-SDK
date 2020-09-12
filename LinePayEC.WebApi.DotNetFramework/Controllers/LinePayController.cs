@@ -33,11 +33,11 @@ namespace LinePayEC.WebApi.DotNetFramework.Controllers
             var nonce = Guid.NewGuid().ToString();
             var reserveUrl = "/v3/payments/request";
 
-            var client = new LinePayClient(_baseAddress);
+            var client = new LinePayClient(_baseAddress, _channelId);
             var requestJson = JsonConvert.SerializeObject(requestApi, client.SerializerSettings);
             var signature = client.GetSignature((_channelSecret + reserveUrl + requestJson + nonce), _channelSecret);
 
-            var result = await client.ReserveAsync(requestApi, _channelId, nonce, signature);
+            var result = await client.ReserveAsync(requestApi, nonce, signature);
 
             return Json(result);
         }
