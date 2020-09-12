@@ -63,7 +63,7 @@ namespace LinePayEC.Models.ResponseModels.ReserveResponse
         /// 交易序號
         /// </summary>
         [JsonProperty("transactionId")]
-        public long TransactionId { get; set; }
+        public string TransactionId { get; set; }
 
         /// <summary>
         /// 該代碼在LINE Pay可以代替掃描器使用
