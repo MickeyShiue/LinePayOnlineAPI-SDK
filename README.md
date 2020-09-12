@@ -2,8 +2,14 @@
 非官方的 LINE Pay Online API v3 For C# SDK <br>
 官方詳細文件 [點擊這裡](https://pay.line.me/jp/developers/apis/onlineApis?locale=zh_TW)
 
+## nuget 套件
+nuget [LinePayOnlineAPIv3](https://www.nuget.org/packages/LinePayOnlineAPIv3/) <br>
+nuget 指令：Install-Package LinePayOnlineAPIv3 -Version 1.0.0
+dotnet CLI：dotnet add package LinePayOnlineAPIv3 --version 1.0.0
+
+
 ## 開始 Getting Started
-建立 Sandbox [點擊這裡](https://pay.line.me/jp/developers/techsupport/sandbox/creation?locale=zh_TW) 註冊 Sandbox 成功後會獲取一組 ChannelId、ChannelSecret <br>
+建立 Sandbox [點擊這裡](https://pay.line.me/jp/developers/techsupport/sandbox/creation?locale=zh_TW)，註冊成功後會獲取一組 ChannelId、ChannelSecret <br>
 
 ## 環境 Environment
 Sandbox：https://sandbox-api-pay.line.me <br>
