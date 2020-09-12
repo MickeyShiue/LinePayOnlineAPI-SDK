@@ -69,7 +69,7 @@ public async Task<IActionResult> Reserve()
     var reserveData = GetReserveData();
     var nonce = Guid.NewGuid().ToString(); //時間戳記 or UUID 1~4
     var requestUrl = "/v3/payments/request";
-    var requestJson = JsonConverterFacade.SerializeObject(reserveData, client.SerializerSettings);
+    var requestJson = JsonConvert.SerializeObject(reserveData, client.SerializerSettings);
     var signature = client.GetSignature((channelSecret + requestUrl + requestJson + nonce), channelSecret);
   
     var result = await client.ReserveAsync(reserveData, nonce, signature);
