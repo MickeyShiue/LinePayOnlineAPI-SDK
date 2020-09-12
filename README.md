@@ -105,4 +105,4 @@ var signature = client.GetSignature((channelSecret + url + queryString + nonce),
 var signature = client.GetSignature((channelSecret + url + requestJson + nonce), channelSecret); //Post
 ```
 
-### [專案範例](https://github.com/MickeyShiue/LinePay/tree/master/LinePayEC.WebApi.DotNetFramework)
+### [專案範例](https://github.com/MickeyShiue/LinePayOnlineAPI-SDK/tree/master/LinePayEC.WebApi.DotNetCore)
